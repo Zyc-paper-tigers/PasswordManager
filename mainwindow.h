@@ -36,6 +36,7 @@ private slots:
     void on_btnBackup_clicked();      // 备份数据
     void on_btnImport_clicked();      // 导入加密文件
     void on_btnExport_clicked();      // 导出加密文件
+    void on_tableWidget_itemSelectionChanged(); // 新增：表格选中变化时触发
 
 private:
     Ui::MainWindow *ui;               // 指向UI界面的指针

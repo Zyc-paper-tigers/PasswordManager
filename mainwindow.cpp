@@ -431,3 +431,27 @@ void MainWindow::on_btnImport_clicked()
     loadCategoriesToCombo();
     loadDataToTable();
 }
+
+// 表格选中行变化时，自动填充左侧输入框
+void MainWindow::on_tableWidget_itemSelectionChanged()
+{
+    // 获取当前选中的行号
+    int selectedRow = ui->tableWidget->currentRow();
+    if (selectedRow < 0) {
+        return; // 没有选中行，直接返回
+    }
+
+    // 从表格中获取选中行的每一列数据
+    QString category = ui->tableWidget->item(selectedRow, 1)->text();
+    QString platform = ui->tableWidget->item(selectedRow, 2)->text();
+    QString account = ui->tableWidget->item(selectedRow, 3)->text();
+    QString password = ui->tableWidget->item(selectedRow, 4)->text();
+    QString remarks = ui->tableWidget->item(selectedRow, 5)->text();
+
+    // 填充到左侧对应的输入框
+    ui->editCategory->setText(category);
+    ui->editPlatform->setText(platform);
+    ui->editAccount->setText(account);
+    ui->editPassword->setText(password); // 显示加密后的密码
+    ui->editRemarks->setPlainText(remarks); // 备注用QTextEdit的setPlainText
+}
