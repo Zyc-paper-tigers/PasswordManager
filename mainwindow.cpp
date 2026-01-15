@@ -455,3 +455,25 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     ui->editPassword->setText(password); // 显示加密后的密码
     ui->editRemarks->setPlainText(remarks); // 备注用QTextEdit的setPlainText
 }
+
+// 显示选中行的原始密码（解密后）
+void MainWindow::on_btnShowPassword_clicked()
+{
+    // 获取当前选中的行
+    int selectedRow = ui->tableWidget->currentRow();
+    if (selectedRow < 0) {
+        QMessageBox::warning(this, "提示", "请先选中一行数据！");
+        return;
+    }
+
+    // 从表格中获取加密后的密码
+    QString encryptedPwd = ui->tableWidget->item(selectedRow, 4)->text();
+    // 解密得到原始密码
+    QString plainPwd = decrypt(encryptedPwd);
+
+    // 用弹窗显示原密码（比直接显示在输入框更安全）
+    QMessageBox::information(this, "原始密码", QString("平台：%1\n账号：%2\n原始密码：%3")
+                                                   .arg(ui->tableWidget->item(selectedRow, 2)->text())
+                                                   .arg(ui->tableWidget->item(selectedRow, 3)->text())
+                                                   .arg(plainPwd));
+}
