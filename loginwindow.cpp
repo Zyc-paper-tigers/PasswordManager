@@ -55,12 +55,11 @@ void LoginWindow::on_btnLogin_clicked()
         return;
     }
 
-    // 加密输入的密码，和数据库中比对
-    QString encryptPwd = encrypt(password);
+    // 核心修改：直接比对明文密码，无需加密
     QSqlQuery query;
     query.prepare("SELECT id FROM user WHERE username = :username AND password = :password");
     query.bindValue(":username", username);
-    query.bindValue(":password", encryptPwd);
+    query.bindValue(":password", password); // 直接用明文比对
 
     if (query.exec() && query.next()) {
         // 登录成功：获取用户ID，打开主窗口，关闭登录窗口

@@ -16,7 +16,7 @@ MainWindow::MainWindow(int currentUserId, QWidget *parent)
 
     // 初始化表格
     ui->tableWidget->setColumnCount(6);
-    ui->tableWidget->setHorizontalHeaderLabels({"ID", "类别", "平台", "账号", "密码（明文）", "备注"});
+    ui->tableWidget->setHorizontalHeaderLabels({"ID", "类别", "平台", "账号", "密码（加密）", "备注"});
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
     }
 }
 
-// 初始化数据库（仅创建表，密码库密码存明文）
+// 初始化数据库（用户表+密码表均明文存储）
 bool MainWindow::initDatabase()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -43,13 +43,13 @@ bool MainWindow::initDatabase()
         return false;
     }
 
-    // 创建用户表（若需用户登录）
+    // 创建用户表（密码明文存储）
     QSqlQuery userQuery;
     const QString createUserTable = R"(
         CREATE TABLE IF NOT EXISTS user (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
+            password TEXT NOT NULL, -- 明文存储用户登录密码
             create_time TEXT NOT NULL
         )
     )";
@@ -58,7 +58,7 @@ bool MainWindow::initDatabase()
         return false;
     }
 
-    // 创建密码表（密码字段存明文）
+    // 创建密码表（密码明文存储）
     QSqlQuery pwdQuery;
     const QString createPwdTable = R"(
         CREATE TABLE IF NOT EXISTS passwords (
@@ -67,7 +67,7 @@ bool MainWindow::initDatabase()
             category TEXT NOT NULL,
             platform TEXT NOT NULL,
             account TEXT NOT NULL,
-            password TEXT NOT NULL, -- 明文存储
+            password TEXT NOT NULL, -- 明文存储密码库密码
             remarks TEXT,
             create_time TEXT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES user(id)
@@ -81,9 +81,10 @@ bool MainWindow::initDatabase()
     return true;
 }
 
-// 注：以下加密/解密函数仅保留给用户登录密码用，密码库密码不再使用
+// 加密函数（仅用于界面显示，不影响数据库存储）
 QString MainWindow::encrypt(const QString &plainText)
 {
+    const QString ENCRYPT_KEY = "PasswordManager2026_Key"; // 自定义加密密钥
     QByteArray keyHash = QCryptographicHash::hash(ENCRYPT_KEY.toUtf8(), QCryptographicHash::Sha256);
     QByteArray plainBytes = plainText.toUtf8();
     for (int i = 0; i < plainBytes.size(); ++i) {
@@ -92,8 +93,10 @@ QString MainWindow::encrypt(const QString &plainText)
     return plainBytes.toBase64();
 }
 
+// 解密函数（仅用于界面显示，不影响数据库存储）
 QString MainWindow::decrypt(const QString &cipherText)
 {
+    const QString ENCRYPT_KEY = "PasswordManager2026_Key"; // 与加密密钥一致
     QByteArray cipherBytes = QByteArray::fromBase64(cipherText.toUtf8());
     QByteArray keyHash = QCryptographicHash::hash(ENCRYPT_KEY.toUtf8(), QCryptographicHash::Sha256);
     for (int i = 0; i < cipherBytes.size(); ++i) {
@@ -102,7 +105,7 @@ QString MainWindow::decrypt(const QString &cipherText)
     return QString(cipherBytes);
 }
 
-// 加载当前用户的密码数据（明文显示）
+// 加载当前用户数据（数据库明文→表格加密显示）
 void MainWindow::loadDataToTable(const QString &category)
 {
     ui->tableWidget->setRowCount(0);
@@ -132,9 +135,9 @@ void MainWindow::loadDataToTable(const QString &category)
         ui->tableWidget->setItem(row, 2, new QTableWidgetItem(query.value(2).toString()));
         ui->tableWidget->setItem(row, 3, new QTableWidgetItem(query.value(3).toString()));
 
-        // 核心修改：数据库读取明文，加密后显示在表格
+        // 数据库明文→加密后显示在表格
         QString plainPwd = query.value(4).toString();
-        QString encryptedPwd = encrypt(plainPwd); // 调用加密函数
+        QString encryptedPwd = encrypt(plainPwd);
         ui->tableWidget->setItem(row, 4, new QTableWidgetItem(encryptedPwd));
 
         ui->tableWidget->setItem(row, 5, new QTableWidgetItem(query.value(5).toString()));
@@ -142,7 +145,7 @@ void MainWindow::loadDataToTable(const QString &category)
     }
 }
 
-// 加载当前用户的分类
+// 加载分类（逻辑不变）
 void MainWindow::loadCategoriesToCombo()
 {
     ui->comboCategory->clear();
@@ -161,7 +164,7 @@ void MainWindow::loadCategoriesToCombo()
     }
 }
 
-// 清空输入框
+// 清空输入框（逻辑不变）
 void MainWindow::clearInputs()
 {
     ui->editCategory->clear();
@@ -171,7 +174,7 @@ void MainWindow::clearInputs()
     ui->editRemarks->setPlainText("");
 }
 
-// -------------------------- 核心修改：添加账号（存明文密码） --------------------------
+// 添加账号（明文存储）
 void MainWindow::on_btnAdd_clicked()
 {
     const QString category = ui->editCategory->text().trimmed();
@@ -185,7 +188,6 @@ void MainWindow::on_btnAdd_clicked()
         return;
     }
 
-    // 移除密码加密步骤，直接存明文
     const QString createTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 
     QSqlQuery query;
@@ -211,7 +213,7 @@ void MainWindow::on_btnAdd_clicked()
     }
 }
 
-// -------------------------- 核心修改：修改账号（存明文密码） --------------------------
+// 修改账号（明文存储）
 void MainWindow::on_btnUpdate_clicked()
 {
     const int selectedRow = ui->tableWidget->currentRow();
@@ -232,7 +234,6 @@ void MainWindow::on_btnUpdate_clicked()
         return;
     }
 
-    // 移除密码加密步骤
     QSqlQuery query;
     query.prepare(R"(
         UPDATE passwords
@@ -315,12 +316,12 @@ void MainWindow::on_btnBackup_clicked()
     QMessageBox::information(this, "成功", "备份成功！\n路径：" + backupPath);
 }
 
-// -------------------------- 核心修改：导出文件（明文导出） --------------------------
+// 导出（明文导出）
 void MainWindow::on_btnExport_clicked()
 {
     const QString exportPath = QFileDialog::getSaveFileName(this, "导出密码文件",
                                                             QDateTime::currentDateTime().toString("passwords_export_yyyyMMddHHmmss.txt"),
-                                                            "文本文件 (*.txt)"); // 改为txt更直观
+                                                            "文本文件 (*.txt)");
     if (exportPath.isEmpty()) {
         return;
     }
@@ -333,18 +334,16 @@ void MainWindow::on_btnExport_clicked()
         return;
     }
 
-    // 直接拼接明文内容
     QString exportContent;
-    exportContent += "类别|平台|账号|密码|备注\n"; // 增加表头
+    exportContent += "类别|平台|账号|密码|备注\n";
     while (query.next()) {
         exportContent += query.value(0).toString() + "|" +
                          query.value(1).toString() + "|" +
                          query.value(2).toString() + "|" +
-                         query.value(3).toString() + "|" + // 明文密码
+                         query.value(3).toString() + "|" + // 明文导出
                          query.value(4).toString() + "\n";
     }
 
-    // 直接写入明文（无需加密）
     QFile file(exportPath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "失败", "打开导出文件失败！\n" + file.errorString());
@@ -358,7 +357,7 @@ void MainWindow::on_btnExport_clicked()
     QMessageBox::information(this, "成功", "导出成功！\n路径：" + exportPath);
 }
 
-// -------------------------- 核心修改：导入文件（明文导入） --------------------------
+// 导入（明文导入）
 void MainWindow::on_btnImport_clicked()
 {
     const QString importPath = QFileDialog::getOpenFileName(this, "导入密码文件", "", "文本文件 (*.txt)");
@@ -366,7 +365,6 @@ void MainWindow::on_btnImport_clicked()
         return;
     }
 
-    // 直接读取明文内容
     QFile file(importPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "失败", "打开导入文件失败！\n" + file.errorString());
@@ -377,12 +375,11 @@ void MainWindow::on_btnImport_clicked()
     QString plainContent = in.readAll();
     file.close();
 
-    // 解析明文内容（跳过表头）
     const QStringList lines = plainContent.split("\n", Qt::SkipEmptyParts);
     int successCount = 0;
     const QString createTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
 
-    for (int i = 1; i < lines.size(); ++i) { // 从第2行开始（跳过表头）
+    for (int i = 1; i < lines.size(); ++i) {
         const QString &line = lines[i];
         const QStringList parts = line.split("|");
         if (parts.size() < 4) {
@@ -398,7 +395,7 @@ void MainWindow::on_btnImport_clicked()
         query.bindValue(":category", parts[0]);
         query.bindValue(":platform", parts[1]);
         query.bindValue(":account", parts[2]);
-        query.bindValue(":password", parts[3]); // 明文存储
+        query.bindValue(":password", parts[3]); // 明文导入
         query.bindValue(":remarks", parts.size() >=5 ? parts[4] : "");
         query.bindValue(":create_time", createTime);
 
@@ -412,7 +409,31 @@ void MainWindow::on_btnImport_clicked()
     loadDataToTable();
 }
 
-// -------------------------- 核心修改：显示原密码（无需解密） --------------------------
+// 选中行变化（表格加密→输入框明文）
+void MainWindow::on_tableWidget_itemSelectionChanged()
+{
+    int selectedRow = ui->tableWidget->currentRow();
+    if (selectedRow < 0) {
+        clearInputs();
+        return;
+    }
+
+    QString category = ui->tableWidget->item(selectedRow, 1)->text();
+    QString platform = ui->tableWidget->item(selectedRow, 2)->text();
+    QString account = ui->tableWidget->item(selectedRow, 3)->text();
+    // 表格加密密码→解密后填充输入框（输入框是密码模式，用户看不到明文）
+    QString encryptedPwd = ui->tableWidget->item(selectedRow, 4)->text();
+    QString plainPwd = decrypt(encryptedPwd);
+    QString remarks = ui->tableWidget->item(selectedRow, 5)->text();
+
+    ui->editCategory->setText(category);
+    ui->editPlatform->setText(platform);
+    ui->editAccount->setText(account);
+    ui->editPassword->setText(plainPwd);
+    ui->editRemarks->setPlainText(remarks);
+}
+
+// 显示原密码（直接读取数据库明文）
 void MainWindow::on_btnShowPassword_clicked()
 {
     int selectedRow = ui->tableWidget->currentRow();
@@ -421,7 +442,7 @@ void MainWindow::on_btnShowPassword_clicked()
         return;
     }
 
-    // 核心修改：直接从数据库读取明文密码（比解密表格内容更可靠）
+    // 直接从数据库读取明文，不依赖表格加密内容
     QString pwdId = ui->tableWidget->item(selectedRow, 0)->text();
     QSqlQuery query;
     query.prepare("SELECT password FROM passwords WHERE id = :id AND user_id = :user_id");
@@ -437,30 +458,6 @@ void MainWindow::on_btnShowPassword_clicked()
     } else {
         QMessageBox::warning(this, "失败", "获取原始密码失败！");
     }
-}
-
-// 表格选中行变化（逻辑不变，只是填充的是明文）
-void MainWindow::on_tableWidget_itemSelectionChanged()
-{
-    int selectedRow = ui->tableWidget->currentRow();
-    if (selectedRow < 0) {
-        clearInputs();
-        return;
-    }
-
-    QString category = ui->tableWidget->item(selectedRow, 1)->text();
-    QString platform = ui->tableWidget->item(selectedRow, 2)->text();
-    QString account = ui->tableWidget->item(selectedRow, 3)->text();
-    // 核心修改：从表格读取加密密码，解密后填充到输入框
-    QString encryptedPwd = ui->tableWidget->item(selectedRow, 4)->text();
-    QString plainPwd = decrypt(encryptedPwd); // 调用解密函数
-    QString remarks = ui->tableWidget->item(selectedRow, 5)->text();
-
-    ui->editCategory->setText(category);
-    ui->editPlatform->setText(platform);
-    ui->editAccount->setText(account);
-    ui->editPassword->setText(plainPwd); // 输入框显示明文（但输入框是密码模式，用户看不到）
-    ui->editRemarks->setPlainText(remarks);
 }
 
 // 一键清空输入框（逻辑不变）

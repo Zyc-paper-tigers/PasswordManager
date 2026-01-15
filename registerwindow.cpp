@@ -71,13 +71,12 @@ void RegisterWindow::on_btnRegister_clicked()
         return;
     }
 
-    // 注册逻辑：插入用户数据
-    QString encryptPwd = encrypt(password);
+    // 核心修改：直接存储明文密码，无需加密
     QString createTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
     QSqlQuery insertQuery;
     insertQuery.prepare("INSERT INTO user (username, password, create_time) VALUES (:username, :password, :create_time)");
     insertQuery.bindValue(":username", username);
-    insertQuery.bindValue(":password", encryptPwd);
+    insertQuery.bindValue(":password", password); // 明文存储
     insertQuery.bindValue(":create_time", createTime);
 
     if (insertQuery.exec()) {
