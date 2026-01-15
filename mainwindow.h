@@ -13,7 +13,6 @@
 #include <QTextStream>
 #include <QTableWidgetItem>
 
-// 自动生成的UI类命名空间
 namespace Ui {
 class MainWindow;
 }
@@ -23,7 +22,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    // 构造函数：接收当前登录用户ID，实现用户数据隔离
     explicit MainWindow(int currentUserId, QWidget *parent = nullptr);
     ~MainWindow() override;
 
@@ -38,23 +36,25 @@ private slots:
     void on_btnExport_clicked();      // 导出加密文件
 
     // 扩展功能槽函数
-    void on_tableWidget_itemSelectionChanged(); // 表格选中行变化（填充/清空输入框）
-    void on_btnShowPassword_clicked();          // 显示解密后的原密码
+    void on_tableWidget_itemSelectionChanged(); // 表格选中行变化
+    void on_btnShowPassword_clicked();          // 显示原密码（无需解密）
     void on_btnClearInputs_clicked();           // 一键清空输入框
 
 private:
     Ui::MainWindow *ui;               // 指向UI界面的指针
     QSqlDatabase db;                  // SQLite数据库对象
-    const QString ENCRYPT_KEY = "PasswordManager2026_Key"; // 加密密钥（可自定义）
-    int m_currentUserId;              // 当前登录用户ID（核心：实现用户数据隔离）
+    // 注：加密密钥仅保留（若需用户登录密码加密），密码库密码不再加密
+    const QString ENCRYPT_KEY = "PasswordManager2026_Key";
+    int m_currentUserId;              // 当前登录用户ID
 
     // 核心工具函数
-    bool initDatabase();              // 初始化数据库（创建/连接表）
-    QString encrypt(const QString &plainText); // 加密函数（哈希+异或+Base64）
-    QString decrypt(const QString &cipherText); // 解密函数
-    void loadDataToTable(const QString &category = "全部"); // 加载当前用户的密码数据到表格
-    void loadCategoriesToCombo();     // 加载当前用户的分类到下拉框
-    void clearInputs();               // 清空所有输入框
+    bool initDatabase();              // 初始化数据库
+    // 注：移除密码加密/解密函数（若无需用户登录加密，可直接删除）
+    QString encrypt(const QString &plainText); // 仅保留给用户登录密码用
+    QString decrypt(const QString &cipherText); // 仅保留给用户登录密码用
+    void loadDataToTable(const QString &category = "全部"); // 加载当前用户数据
+    void loadCategoriesToCombo();     // 加载分类
+    void clearInputs();               // 清空输入框
 };
 
 #endif // MAINWINDOW_H

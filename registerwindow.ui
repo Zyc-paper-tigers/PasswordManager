@@ -52,7 +52,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>90</x>
@@ -130,7 +130,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="leRegConfirmPwd"/>
+       <widget class="QLineEdit" name="leRegConfirmPwd">
+        <property name="echoMode">
+         <enum>QLineEdit::EchoMode::Password</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
