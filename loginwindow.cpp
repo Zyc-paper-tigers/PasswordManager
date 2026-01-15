@@ -32,7 +32,7 @@ bool LoginWindow::initDatabase()
 }
 
 // 加密函数（和密码库加密逻辑一致）
-QString LoginWindow::encrypt(const QString &plainText, const QString &key)
+/*QString LoginWindow::encrypt(const QString &plainText, const QString &key)
 {
     QByteArray keyHash = QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Sha256);
     QByteArray plainBytes = plainText.toUtf8();
@@ -40,7 +40,7 @@ QString LoginWindow::encrypt(const QString &plainText, const QString &key)
         plainBytes[i] ^= keyHash[i % keyHash.size()];
     }
     return plainBytes.toBase64();
-}
+}*/
 
 // 登录按钮槽函数
 void LoginWindow::on_btnLogin_clicked()

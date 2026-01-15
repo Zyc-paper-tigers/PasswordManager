@@ -30,7 +30,7 @@ bool RegisterWindow::initDatabase()
     return db.open();
 }
 
-QString RegisterWindow::encrypt(const QString &plainText, const QString &key)
+/*QString RegisterWindow::encrypt(const QString &plainText, const QString &key)
 {
     QByteArray keyHash = QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Sha256);
     QByteArray plainBytes = plainText.toUtf8();
@@ -38,7 +38,7 @@ QString RegisterWindow::encrypt(const QString &plainText, const QString &key)
         plainBytes[i] ^= keyHash[i % keyHash.size()];
     }
     return plainBytes.toBase64();
-}
+}*/
 
 // 注册按钮槽函数
 void RegisterWindow::on_btnRegister_clicked()
