@@ -25,8 +25,8 @@
      <rect>
       <x>10</x>
       <y>26</y>
-      <width>681</width>
-      <height>421</height>
+      <width>586</width>
+      <height>419</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -42,6 +42,7 @@
         <widget class="QLabel" name="label">
          <property name="font">
           <font>
+           <family>MV Boli</family>
            <pointsize>16</pointsize>
           </font>
          </property>
@@ -57,6 +58,7 @@
         <widget class="QPushButton" name="btnFilter">
          <property name="font">
           <font>
+           <family>MS Gothic</family>
            <pointsize>11</pointsize>
           </font>
          </property>
@@ -69,6 +71,7 @@
         <widget class="QPushButton" name="btnShowPassword">
          <property name="font">
           <font>
+           <family>Poor Richard</family>
            <pointsize>11</pointsize>
           </font>
          </property>
@@ -81,6 +84,7 @@
         <widget class="QPushButton" name="btnClearInputs">
          <property name="font">
           <font>
+           <family>Palatino Linotype</family>
            <pointsize>11</pointsize>
           </font>
          </property>
@@ -99,6 +103,11 @@
        <layout class="QFormLayout" name="formLayout">
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <family>OCR A</family>
+           </font>
+          </property>
           <property name="text">
            <string>类别</string>
           </property>
@@ -109,6 +118,11 @@
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <family>OCR A</family>
+           </font>
+          </property>
           <property name="text">
            <string>平台</string>
           </property>
@@ -119,6 +133,11 @@
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <family>OCR A</family>
+           </font>
+          </property>
           <property name="text">
            <string>账号</string>
           </property>
@@ -129,6 +148,11 @@
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <family>OCR A</family>
+           </font>
+          </property>
           <property name="text">
            <string>密码</string>
           </property>
@@ -143,6 +167,11 @@
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_6">
+          <property name="font">
+           <font>
+            <family>OCR A</family>
+           </font>
+          </property>
           <property name="text">
            <string>备注</string>
           </property>
@@ -199,8 +228,11 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="btnAdd">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/tianjia.png);</string>
+         </property>
          <property name="text">
-          <string>添加</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -219,8 +251,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnUpdate">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/xiugai.png);</string>
+         </property>
          <property name="text">
-          <string>修改</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -239,8 +274,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnDelete">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/shanchu.png);</string>
+         </property>
          <property name="text">
-          <string>删除</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -259,8 +297,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnBackup">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/beifen.png);</string>
+         </property>
          <property name="text">
-          <string>备份</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -279,8 +320,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnImport">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/daoru.png);</string>
+         </property>
          <property name="text">
-          <string>导入</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -299,8 +343,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="btnExport">
+         <property name="styleSheet">
+          <string notr="true">image: url(:/img/daochu.png);</string>
+         </property>
          <property name="text">
-          <string>导出</string>
+          <string/>
          </property>
         </widget>
        </item>
