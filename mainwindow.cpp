@@ -465,3 +465,20 @@ void MainWindow::on_btnClearInputs_clicked()
 {
     clearInputs();
 }
+
+// -------------------------- 新增：退出登录槽函数 --------------------------
+void MainWindow::on_btnLogout_clicked()
+{
+    // 1. 确认退出（可选，提升用户体验）
+    if (QMessageBox::question(this, "确认退出", "是否确定退出当前账号？",
+                              QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) {
+        return;
+    }
+
+    // 2. 关闭当前主窗口
+    this->close();
+
+    // 3. 打开登录界面（支持账号切换）
+    LoginWindow *loginWin = new LoginWindow();
+    loginWin->show();
+}

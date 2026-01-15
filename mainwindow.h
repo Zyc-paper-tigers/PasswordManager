@@ -12,6 +12,7 @@
 #include <QCryptographicHash>
 #include <QTextStream>
 #include <QTableWidgetItem>
+#include "loginwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,11 +35,13 @@ private slots:
     void on_btnBackup_clicked();      // 备份数据
     void on_btnImport_clicked();      // 导入加密文件
     void on_btnExport_clicked();      // 导出加密文件
+    void on_btnLogout_clicked();//退出登录
 
     // 扩展功能槽函数
     void on_tableWidget_itemSelectionChanged(); // 表格选中行变化
     void on_btnShowPassword_clicked();          // 显示原密码（无需解密）
     void on_btnClearInputs_clicked();           // 一键清空输入框
+
 
 private:
     Ui::MainWindow *ui;               // 指向UI界面的指针
