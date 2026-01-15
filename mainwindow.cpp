@@ -438,22 +438,23 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     // 获取当前选中的行号
     int selectedRow = ui->tableWidget->currentRow();
     if (selectedRow < 0) {
-        return; // 没有选中行，直接返回
+        // 没有选中行时，清空所有输入框
+        clearInputs();
+        return;
     }
 
-    // 从表格中获取选中行的每一列数据
+    // 有选中行时，填充输入框（原有逻辑不变）
     QString category = ui->tableWidget->item(selectedRow, 1)->text();
     QString platform = ui->tableWidget->item(selectedRow, 2)->text();
     QString account = ui->tableWidget->item(selectedRow, 3)->text();
     QString password = ui->tableWidget->item(selectedRow, 4)->text();
     QString remarks = ui->tableWidget->item(selectedRow, 5)->text();
 
-    // 填充到左侧对应的输入框
     ui->editCategory->setText(category);
     ui->editPlatform->setText(platform);
     ui->editAccount->setText(account);
-    ui->editPassword->setText(password); // 显示加密后的密码
-    ui->editRemarks->setPlainText(remarks); // 备注用QTextEdit的setPlainText
+    ui->editPassword->setText(password);
+    ui->editRemarks->setPlainText(remarks);
 }
 
 // 显示选中行的原始密码（解密后）
@@ -476,4 +477,11 @@ void MainWindow::on_btnShowPassword_clicked()
                                                    .arg(ui->tableWidget->item(selectedRow, 2)->text())
                                                    .arg(ui->tableWidget->item(selectedRow, 3)->text())
                                                    .arg(plainPwd));
+}
+
+// 一键清空左侧输入框
+void MainWindow::on_btnClearInputs_clicked()
+{
+    // 直接调用已有的清空函数，无需重复写代码
+    clearInputs();
 }

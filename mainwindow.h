@@ -38,6 +38,7 @@ private slots:
     void on_btnExport_clicked();      // 导出加密文件
     void on_tableWidget_itemSelectionChanged(); // 新增：表格选中变化时触发
     void on_btnShowPassword_clicked(); // 新增：显示原密码
+    void on_btnClearInputs_clicked();
 
 private:
     Ui::MainWindow *ui;               // 指向UI界面的指针
